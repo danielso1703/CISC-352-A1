@@ -34,5 +34,15 @@ def ord_dh(csp):
 
 def ord_mrv(csp):
     ''' return variable according to the Minimum Remaining Values heuristic '''
-    # IMPLEMENT
-    pass
+    # Returns the variable with the most constrained legal domain
+    # Get all variables
+    all_vars = csp.get_all_vars()
+    most_constrained = None
+    domain_size = 100000
+    # Iterate through variables checking current domain size
+    # Return variable with smallest domain
+    for var in all_vars:
+        if var.cur_domain_size() < domain_size:
+            most_constrained = var
+    return most_constrained
+
