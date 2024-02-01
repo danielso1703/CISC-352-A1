@@ -92,7 +92,31 @@ def prop_FC(csp, newVar=None):
        only one uninstantiated variable. Remember to keep
        track of all pruned variable,value pairs and return '''
     #IMPLEMENT
-    pass
+    if newVar == None:
+        pass
+    else:
+        # This is for checking constraints with exactly one variable in their scope
+        # that is unassigned
+        have_newVar = csp.get_cons_with_var(newVar)
+        # Iterate through constraints and check if they only have one unasigned var
+        for const in have_newVar:
+            if const.get_n_unasgn() == 1:
+                scope = const.get_scope()
+                prune = []
+                # Scopes seem to be rows and columns, and the same num can't appear
+                # twice, so prune any numbers that are in same row / col
+                for var in scope:
+                    if var.is_assigned():
+                        prune.append(var.get_assigned_value())
+                    else: 
+                        # Just doing this so I know where in the list the unassigned var is
+                        # Shit ass code lol
+                        scope.remove(var)
+                        scope.append(var)
+                for p in prune:
+                    scope[-1].prune_value(p)
+
+
 
 
 def prop_GAC(csp, newVar=None):
@@ -100,4 +124,9 @@ def prop_GAC(csp, newVar=None):
        processing all constraints. Otherwise we do GAC enforce with
        constraints containing newVar on GAC Queue'''
     #IMPLEMENT
-    pass
+    if newVar == None:
+        pass
+    else:
+        have_newVar = csp.get_cons_with_var(newVar)
+        print(have_newVar)
+
