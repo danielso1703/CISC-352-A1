@@ -29,8 +29,23 @@ var_ordering == a function with the following template
 
 def ord_dh(csp):
     ''' return variables according to the Degree Heuristic '''
-    # IMPLEMENT
-    pass
+    # Need to get variable that appears in most constraints
+    # with other unassigned vars
+    all_vars = csp.get_all_vars()
+    dh = None
+    appears_in = 0
+    # Iterate through variables and get number of constraints they appear in
+    for var in all_vars:
+        total = 0
+        cons_list = csp.get_cons_with_var(var)
+        # Check if constraint has unassigned vars
+        for con in cons_list:
+            if con.get_n_unasgn() > 0:
+                total += 1
+        # If it appears in the most constraints, save it
+        if total > appears_in:
+            dh = var
+    return dh
 
 def ord_mrv(csp):
     ''' return variable according to the Minimum Remaining Values heuristic '''
