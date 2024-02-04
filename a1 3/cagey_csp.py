@@ -89,22 +89,29 @@ def binary_ne_grid(cagey_grid):
     n, cages = cagey_grid
     csp = CSP("binary_ne_grid")
 
-    var_array = [[Variable(f"{i*n + j}", domain=list(range(1, n+1)))
-                  for j in range(n)] for i in range(n)]
+    var_array = []
+    variables = []  # To keep a linear list of variables for easy access
 
-    variables = [var for sublist in var_array for var in sublist]
+    for i in range(n):
+        row = []
+        for j in range(n):
+            # Create a variable for each cell with a domain from 1 to n
+            variable = Variable(domain=list(range(1, n+1)))
+            row.append(variable)
+            variables.append(variable)  # Add to the linear list of variables
+        var_array.append(row)
 
-    # Adding binary not-equal constraints for rows and columns as before
+    # Adding binary not-equal constraints for rows and columns
     for i in range(n):
         for j in range(n):
             # Row constraints
             for k in range(j+1, n):
-                csp.add_constraint((variables[i*n+j], variables[i*n+k],
-                                                    lambda x, y: x != y))
+                csp.add_constraint(variables[i*n+j], variables[i*n+k],
+                                   lambda x, y: x != y)
             # Column constraints
             for k in range(i+1, n):
-                csp.add_constraint((variables[i*n+j], variables[k*n+j],
-                                                    lambda x, y: x != y))
+                csp.add_constraint(variables[i*n+j], variables[k*n+j],
+                                   lambda x, y: x != y)
     
     return csp, variables
 
@@ -113,42 +120,33 @@ def nary_ad_grid(cagey_grid):
     csp = CSP("nary_ad_grid")
     
     # Create variables for the grid
-    var_array = [[Variable(f"Cell{i}_{j}", domain=list(range(1, n+1)))
-                  for j in range(n)] for i in range(n)]
-    
-    variables = [var for sublist in var_array for var in sublist]
+    var_array = []
+    variables = []  # To keep a linear list of variables for easy access
 
     for i in range(n):
-        row_vars = [var_array[i][j] for j in range(n)]
-        csp.add_constraint((f"Row_{i}_AllDiff", row_vars))
+        row = []
+        for j in range(n):
+            # Create a variable for each cell with a domain from 1 to n
+            variable = Variable(domain=list(range(1, n+1)))
+            row.append(variable)
+            variables.append(variable)  # Add to the linear list of variables
+        var_array.append(row)
+        
+   # Adding n-ary all-different constraints for each row
+    for i in range(n):
+        row_vars = var_array[i]
+        # Assuming add_all_diff_constraint is a method to add an all-different constraint
+        # for a list of variables. Replace with your actual method as necessary.
+        csp.add_all_diff_constraint(row_vars)
     
     # Adding n-ary all-different constraints for each column
     for j in range(n):
         col_vars = [var_array[i][j] for i in range(n)]
-        csp.add_constraint((f"Col_{j}_AllDiff", col_vars))
+        csp.add_all_diff_constraint(col_vars)
         
-    return csp, variables
+    return csp, var_array
 
 def cagey_csp_model(cagey_grid):
-    n, cages = cagey_grid
-    csp, var_array = binary_ne_grid((n, []))  # Initialize the grid without cage constraints
+    csp, variables = binary_ne_grid(cagey_grid);
     
-    # Flatten the variable array for easy access
-    variables = [var for sublist in var_array for var in sublist]
-    
-    # Process each cage constraint
-    for value, cells, operation in cages:
-
-        if operation == '+':
-           pass
-        elif operation == '-':
-            pass
-        elif operation == '*':
-            pass
-        elif operation == '/':
-          
-            pass  
-        elif operation == '?':
-            pass  
-
-    return csp, variables
+    pass
