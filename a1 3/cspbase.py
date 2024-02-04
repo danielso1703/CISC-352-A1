@@ -503,7 +503,6 @@ class BT:
         for v in self.csp.vars:
             if not v.is_assigned():
                 self.unasgn_vars.append(v)
-
         status, prunings = propagator(self.csp) #initial propagate no assigned variables.
         self.nPrunings = self.nPrunings + len(prunings)
 

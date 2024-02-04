@@ -53,6 +53,7 @@ c1.add_satisfying_tuples([[2, 1, 1], [3, 1, 2], [3, 2, 1]])
 c2 = Constraint('C2', [w, x, y, z])
 # c2 is constraint w == x + y + z. Instead of writing down the satisfying
 # tuples we compute them
+# [4,2,1,1] []
 
 varDoms = []
 for v in [w, x, y, z]:
@@ -76,9 +77,9 @@ btracker = BT(simpleCSP)
 print("Plain Bactracking on simple CSP")
 btracker.bt_search(prop_BT)
 print("=======================================================")
-# print("Forward Checking on simple CSP")
-# btracker.bt_search(prop_FC)
-# print("=======================================================")
+print("Forward Checking on simple CSP")
+btracker.bt_search(prop_FC)
+print("=======================================================")
 # print("GAC on simple CSP")
 # btracker.bt_search(prop_GAC)
 
@@ -218,10 +219,10 @@ trace = False
 print("Plain Backtracking on Colouring Australia")
 solve_graph_color('BT', trace)
 print("=========================================")
-# trace = False
-# print("Forward Checking on Colouring Australia")
-# solve_graph_color('FC', trace)
-# print("=========================================")
+trace = False
+print("Forward Checking on Colouring Australia")
+solve_graph_color('FC', trace)
+print("=========================================")
 
 
 # ================
@@ -281,11 +282,11 @@ def solve_nQueens(n, propType, trace=False):
 trace = False
 #trace = False
 print("Plain Bactracking on 8-queens")
-solve_nQueens(16, 'BT', trace)
+solve_nQueens(8, 'BT', trace)
 print("=======================================================")
-#print("Forward Checking 8-queens")
-#solve_nQueens(8, 'FC', trace)
-#print("=======================================================")
+print("Forward Checking 8-queens")
+solve_nQueens(8, 'FC', trace)
+print("=======================================================")
 #print("GAC 8-queens")
 #solve_nQueens(8, 'GAC', trace)
 

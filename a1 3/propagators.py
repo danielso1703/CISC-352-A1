@@ -74,7 +74,8 @@
 def prop_BT(csp, newVar=None):
     '''Do plain backtracking propagation. That is, do no
     propagation at all. Just check fully instantiated constraints'''
-
+   
+    
     if not newVar:
         return True, []
     for c in csp.get_cons_with_var(newVar):
@@ -91,7 +92,43 @@ def prop_FC(csp, newVar=None):
     '''Do forward checking. That is check constraints with
        only one uninstantiated variable. Remember to keep
        track of all pruned variable,value pairs and return '''
+    
     #IMPLEMENT
+    prune_list = []
+    final_bool = True
+    if newVar != None:
+        domainVals = newVar.cur_domain() #get the current domain (this domain contains all the previously pruned values for newVar)
+        constraints = csp.get_cons_with_var(newVar) #get all constraints for newVar
+        for constraint in constraints: #loop through all constraints
+            temp_bool = False #set temp_bool to false with every constraint checked, only switch it to true if a domain value satisifies the constraint
+            for val in domainVals: #loop through domain on newVar
+                check = constraint.check_var_val(newVar, val) #check that the constraint still holds if newVar is equal to val 
+                if check == False: #if domain value breaks constraint, add to prune list
+                    if (newVar, val) not in prune_list: #check if variable-val pair is already in prune list
+                        newVar.prune_value(val)
+                        prune_list.append((newVar, val)) #add (variable,val) tuple to prune list
+                else:
+                    temp_bool = True #at least one domain value satisfies the constraint
+            if temp_bool == False:#if no domain satifies any of the constraint, then the variable is at a deadend
+                final_bool = False
+        return final_bool, prune_list
+    else:
+        #this section creates a prune list on all unassigned variable in a constraints scope. It does this for each constraint.
+        #I return true because im hoping that the profs algorithm only calls propagator functions with newVar=None when the program first starts running lol
+        constraints = csp.get_all_cons()
+        for constraint in constraints:
+            if constraint.get_n_unasgn() > 0:
+                unasgn_list = constraint.get_unasgn_vars()
+                for var in unasgn_list:
+                    domainVals = var.cur_domain()
+                    for val in domainVals:
+                        check = constraint.check_var_val(var, val)
+                        if check == False:
+                            if (var, val) not in prune_list:
+                                var.prune_value(val)
+                                prune_list.append((var, val))
+        return True, prune_list
+    '''
     if newVar == None:
         pass
     else:
@@ -119,7 +156,7 @@ def prop_FC(csp, newVar=None):
                         scope.append(var)
                 for p in pruned:
                     scope[-1].prune_value(p)
-
+    '''
 
 '''
 def prop_FC(csp, newVar=None):
