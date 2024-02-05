@@ -364,7 +364,7 @@ class TestBinaryGrid(unittest.TestCase):
             message += "\n\nStudent code threw exception \"%s\". " % e
             message += "Failed to construct board!\n%s\n" % str(b)
             passed = False
-
+        print(message)
         self.assertTrue(passed, message)
         passed = False
 
@@ -380,7 +380,7 @@ class TestBinaryGrid(unittest.TestCase):
                     message += "Failed to encode: %s\n" % a.sat_tuples
         else:
             message += "Encoded incorrect number of constraints for board: %s\n" % str(b)
-
+        print(message)
         end_time = time.time()
         time_spent = end_time-start_time
         

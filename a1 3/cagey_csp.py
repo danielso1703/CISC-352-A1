@@ -83,6 +83,7 @@ An example of a 3x3 puzzle would be defined as:
 
 '''
 
+import itertools
 from cspbase import *
 
 def binary_ne_grid(cagey_grid):
@@ -121,35 +122,46 @@ def binary_ne_grid(cagey_grid):
     return csp, var_array
 
 def nary_ad_grid(cagey_grid):
-    n, cages = cagey_grid
-    csp = CSP("nary_ad_grid")
-    
-    # Create variables for the grid
-    var_array = []
-    variables = []  # To keep a linear list of variables for easy access
+    n, _ = cagey_grid  # Ignore the cages for this model, just use the grid size
+    csp = CSP("nary_ne_grid")  # Initialize the CSP
+     # Initialize variables with domains from 1 to n and add them to CSP
+    var_array = []  # This will store Variable objects
+    domains = [x for (x) in itertools.product(range(1,n+1), repeat=n)]
+    mod_dom = []
+    for dom in domains:
+        if len(set(dom)) == len(dom):
+            mod_dom.append(dom)
 
-    for i in range(n):
-        row = []
-        for j in range(n):
-            # Create a variable for each cell with a domain from 1 to n
-            variable = Variable(domain=list(range(1, n+1)))
-            row.append(variable)
-            variables.append(variable)  # Add to the linear list of variables
-        var_array.append(row)
-        
-   # Adding n-ary all-different constraints for each row
-    for i in range(n):
-        row_vars = var_array[i]
-        # Assuming add_all_diff_constraint is a method to add an all-different constraint
-        # for a list of variables. Replace with your actual method as necessary.
-        csp.add_all_diff_constraint(row_vars)
+    rowList = []
+    for row in range(n):
+        cur_row = []
+        for col in range(n):
+            var_name = f"cell{row}{col}"
+            var = Variable(var_name, list(range(1, n + 1)))
+            csp.add_var(var)  # Correct method to add variables to CSP
+            cur_row.append(var)  # Store Variable objects, not names
+            var_array.append(var)
+        rowList.append(cur_row)
+
+    for row in rowList:
+        con = Constraint("Row", row)
+        con.add_satisfying_tuples(mod_dom)
+        csp.add_constraint(con)
     
-    # Adding n-ary all-different constraints for each column
-    for j in range(n):
-        col_vars = [var_array[i][j] for i in range(n)]
-        csp.add_all_diff_constraint(col_vars)
-        
+    colLists = []
+    for i in range(n):
+        col = []
+        for j in range(n):
+            col.append(rowList[j][i])
+        colLists.append(col)
+    
+    for col in colLists:
+        con = Constraint("Col", col)
+        con.add_satisfying_tuples(mod_dom)
+        csp.add_constraint(con)
+
     return csp, var_array
+
 
 def cagey_csp_model(cagey_grid):
     csp, variables = binary_ne_grid(cagey_grid)
