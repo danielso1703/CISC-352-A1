@@ -33,19 +33,20 @@ def ord_dh(csp):
     # with other unassigned vars
     all_vars = csp.get_all_vars()
     dh = None
-    appears_in = 0
+    appearsMax= -1
     # Iterate through variables and get number of constraints they appear in
     for var in all_vars:
-        total = 0
-        cons_list = csp.get_cons_with_var(var)
+        if not var.is_assigned():
+            total = 0
+            cons_list = csp.get_cons_with_var(var)
         # Check if constraint has unassigned vars
-        for con in cons_list:
-            if con.get_n_unasgn() > 0:
-                total += 1
+            for con in cons_list:
+                if con.get_n_unasgn() > 1:
+                    total += 1
         # If it appears in the most constraints, save it
-        if total > appears_in:
-            dh = var
-            appears_in = total
+            if total > appearsMax:
+                dh = var
+                appearsMax = total
 
     return dh
 
