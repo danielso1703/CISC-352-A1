@@ -1616,7 +1616,6 @@ class TestDH(unittest.TestCase):
             else:
                 message += "No Variable Returned from Ord DH"
                 passed = False
-
         self.assertTrue(passed, message)
 
     def test_dh_2(self):
@@ -1646,7 +1645,6 @@ class TestDH(unittest.TestCase):
             else:
                 message += "No Variable Returned from Ord DH"
                 passed = False
-
         self.assertTrue(passed, message)
 
     def test_dh_3(self):

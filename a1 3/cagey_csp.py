@@ -86,7 +86,8 @@ An example of a 3x3 puzzle would be defined as:
 from cspbase import *
 
 def binary_ne_grid(cagey_grid):
-    n, cages = cagey_grid
+    n= cagey_grid[0]
+    cages = cagey_grid[1]
     csp = CSP("binary_ne_grid")
 
     var_array = []
@@ -112,6 +113,7 @@ def binary_ne_grid(cagey_grid):
             for k in range(i+1, n):
                 csp.add_constraint(variables[i*n+j], variables[k*n+j],
                                    lambda x, y: x != y)
+                
     
     return csp, variables
 

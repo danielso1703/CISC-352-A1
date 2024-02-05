@@ -45,6 +45,8 @@ def ord_dh(csp):
         # If it appears in the most constraints, save it
         if total > appears_in:
             dh = var
+            appears_in = total
+
     return dh
 
 def ord_mrv(csp):
@@ -57,7 +59,8 @@ def ord_mrv(csp):
     # Iterate through variables checking current domain size
     # Return variable with smallest domain
     for var in all_vars:
-        if var.cur_domain_size() < domain_size:
+        if var.cur_domain_size() <= domain_size:
             most_constrained = var
+            domain_size = var.cur_domain_size()
     return most_constrained
 
