@@ -139,23 +139,25 @@ def prop_GAC(csp, newVar=None):
        constraints containing newVar on GAC Queue'''
     #IMPLEMENT
     if newVar == None:
-       constraints = csp.get_all_cons()
+       gac_queue = csp.get_all_cons()
     else:
-        constraints = csp.get_cons_with_var(newVar)
+        gac_queue = csp.get_cons_with_var(newVar)
 
     prune_list = []
-    while constraints:
-        for constraint in constraints:
-            if constraint.get_n_unasgn() > 0:
-                unasgn_list = constraint.get_unasgn_vars()
-                for var in unasgn_list:
-                    domainVals = var.cur_domain()
-                    for val in domainVals:
-                        check = constraint.check_var_val(var, val)
-                        if check == False:
-                            if (var, val) not in prune_list:
-                                var.prune_value(val)
-                                prune_list.append((var, val))
-        return True, prune_list
+    while gac_queue:
+        constraint = gac_queue.pop(0)
+        unasgn_list = constraint.get_unasgn_vars()
+
+        for var in unasgn_list:
+            domainVals = var.cur_domain()
+            for val in domainVals:
+                check = constraint.check_var_val(var, val)
+                if not check:
+                    if (var, val) not in prune_list:
+                        var.prune_value(val)
+                        prune_list.append((var, val))
+                      
+
+    return True, prune_list
 
 
