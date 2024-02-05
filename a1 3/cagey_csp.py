@@ -88,16 +88,36 @@ from cspbase import *
 def binary_ne_grid(cagey_grid):
     n, _ = cagey_grid  # Ignore the cages for this model, just use the grid size
     csp = CSP("binary_ne_grid")  # Initialize the CSP
-    var_array = []
-    # Create a variable for each cell in the grid, with domain 1 to n
-    cell_array = [[f'Cell({i},{j})' for j in range(n)] for i in range(n)]
-    for cell in cell_array:
-        for i in cell:  
-            i = Variable(i, [1,2,3,4,5,6,7,8,9])
-            var_array.append(i)
-    # Constraint creation
-    column_constraint = Constraint("Column_constraint", var_array)
-    row_constraint = Constraint("Row_constraint", var_array)
+     # Initialize variables with domains from 1 to n and add them to CSP
+    var_array = []  # This will store Variable objects
+    for row in range(n):
+        for col in range(n):
+            var_name = f"cell{row}{col}"
+            var = Variable(var_name, list(range(1, n + 1)))
+            csp.add_var(var)  # Correct method to add variables to CSP
+            var_array.append(var)  # Store Variable objects, not names
+
+    # Add binary not-equal constraints between all pairs of cells in the same row and column
+    for i in range(n):
+        for j in range(n):
+            # Row constraints
+            for k in range(n):
+                if k != j:  # Ensure we're not comparing a cell with itself
+                    var1 = var_array[i * n + j]
+                    var2 = var_array[i * n + k]
+                    con = Constraint(f"Row{i}_{j}ne{i}{k}", [var1, var2])
+                    tuples = [(x, y) for x in range(1, n + 1) for y in range(1, n + 1) if x != y]
+                    con.add_satisfying_tuples(tuples)
+                    csp.add_constraint(con)
+            # Column constraints
+            for k in range(n):
+                if k != i:  # Ensure we're not comparing a cell with itself
+                    var1 = var_array[i * n + j]
+                    var2 = var_array[k * n + j]
+                    con = Constraint(f"Col{j}_{i}ne{j}_{k}", [var1, var2])
+                    tuples = [(x, y) for x in range(1, n + 1) for y in range(1, n + 1) if x != y]
+                    con.add_satisfying_tuples(tuples)
+                    csp.add_constraint(con)
     return csp, var_array
 
 def nary_ad_grid(cagey_grid):
