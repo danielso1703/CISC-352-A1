@@ -128,62 +128,8 @@ def prop_FC(csp, newVar=None):
                                 var.prune_value(val)
                                 prune_list.append((var, val))
         return True, prune_list
-    '''
-    if newVar == None:
-        pass
-    else:
+    
 
-
-        pruned = []  # To keep track of pruned values
-
-        # This is for checking constraints with exactly one variable in their scope
-        # that is unassigned
-        have_newVar = csp.get_cons_with_var(newVar)
-        # Iterate through constraints and check if they only have one unasigned var
-        for const in have_newVar:
-            if const.get_n_unasgn() == 1:
-                scope = const.get_scope()
-                #prune = []
-                # Scopes seem to be rows and columns, and the same num can't appear
-                # twice, so prune any numbers that are in same row / col
-                for var in scope:
-                    if var.is_assigned():
-                        pruned.append(var.get_assigned_value())
-                    else: 
-                        # Just doing this so I know where in the list the unassigned var is
-                        # Shit ass code lol
-                        scope.remove(var)
-                        scope.append(var)
-                for p in pruned:
-                    scope[-1].prune_value(p)
-    '''
-
-'''
-def prop_FC(csp, newVar=None):
-    pruned = []  # To keep track of pruned values
-
-    if newVar is None:
-        # For forward checking, if no variable is newly instantiated, no action is needed
-        return True, pruned
-
-    # Get constraints involving the newly instantiated variable
-    constraints = csp.get_cons_with_var(newVar)
-    for const in constraints:
-        # Proceed only if there's exactly one unassigned variable in the constraint
-        if const.get_n_unasgn() == 1:
-            unasgn_var = const.get_unasgn_vars()[0]  # The unassigned variable in the constraint
-            for val in unasgn_var.cur_domain():
-                # Temporarily assign the value to check constraint satisfaction
-                unasgn_var.assign(val)
-                if not const.check():  # Check the constraint with this temporary assignment
-                    unasgn_var.prune_value(val)  # Prune if the constraint is not satisfied
-                    pruned.append((unasgn_var, val))  # Keep track of pruned values
-                unasgn_var.unassign()  # Undo the temporary assignment
-            if unasgn_var.cur_domain_size() == 0:
-                return False, pruned  # Failure if the domain is empty
-
-    return True, pruned
-'''
 
 
 
@@ -192,10 +138,13 @@ def prop_GAC(csp, newVar=None):
        processing all constraints. Otherwise we do GAC enforce with
        constraints containing newVar on GAC Queue'''
     #IMPLEMENT
-    prune_list = []
-    final_bool = True
     if newVar == None:
-        constraints = csp.get_all_cons()
+       constraints = csp.get_all_cons()
+    else:
+        constraints = csp.get_cons_with_var(newVar)
+
+    prune_list = []
+    while constraints:
         for constraint in constraints:
             if constraint.get_n_unasgn() > 0:
                 unasgn_list = constraint.get_unasgn_vars()
@@ -209,7 +158,4 @@ def prop_GAC(csp, newVar=None):
                                 prune_list.append((var, val))
         return True, prune_list
 
-    else:
-        have_newVar = csp.get_cons_with_var(newVar)
-        print(have_newVar)
 
