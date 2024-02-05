@@ -86,36 +86,19 @@ An example of a 3x3 puzzle would be defined as:
 from cspbase import *
 
 def binary_ne_grid(cagey_grid):
-    n= cagey_grid[0]
-    cages = cagey_grid[1]
-    csp = CSP("binary_ne_grid")
-
+    n, _ = cagey_grid  # Ignore the cages for this model, just use the grid size
+    csp = CSP("binary_ne_grid")  # Initialize the CSP
     var_array = []
-    variables = []  # To keep a linear list of variables for easy access
-
-    for i in range(n):
-        row = []
-        for j in range(n):
-            # Create a variable for each cell with a domain from 1 to n
-            variable = Variable(domain=list(range(1, n+1)))
-            row.append(variable)
-            variables.append(variable)  # Add to the linear list of variables
-        var_array.append(row)
-
-    # Adding binary not-equal constraints for rows and columns
-    for i in range(n):
-        for j in range(n):
-            # Row constraints
-            for k in range(j+1, n):
-                csp.add_constraint(variables[i*n+j], variables[i*n+k],
-                                   lambda x, y: x != y)
-            # Column constraints
-            for k in range(i+1, n):
-                csp.add_constraint(variables[i*n+j], variables[k*n+j],
-                                   lambda x, y: x != y)
-                
-    
-    return csp, variables
+    # Create a variable for each cell in the grid, with domain 1 to n
+    cell_array = [[f'Cell({i},{j})' for j in range(n)] for i in range(n)]
+    for cell in cell_array:
+        for i in cell:  
+            i = Variable(i, [1,2,3,4,5,6,7,8,9])
+            var_array.append(i)
+    # Constraint creation
+    column_constraint = Constraint("Column_constraint", var_array)
+    row_constraint = Constraint("Row_constraint", var_array)
+    return csp, var_array
 
 def nary_ad_grid(cagey_grid):
     n, cages = cagey_grid
@@ -149,6 +132,6 @@ def nary_ad_grid(cagey_grid):
     return csp, var_array
 
 def cagey_csp_model(cagey_grid):
-    csp, variables = binary_ne_grid(cagey_grid);
+    csp, variables = binary_ne_grid(cagey_grid)
     
     pass
